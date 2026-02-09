@@ -4,11 +4,37 @@ import { SymptomForm } from "@/components/SymptomForm";
 import { AnalysisResult } from "@/components/AnalysisResult";
 import { HospitalMap } from "@/components/HospitalMap";
 import { type AnalysisResponse } from "@shared/schema";
-import { HeartPulse, Stethoscope, ChevronRight, Activity, MapPin } from "lucide-react";
+import { HeartPulse, Stethoscope, ChevronRight, Activity, MapPin, Info, ShieldCheck, FileText } from "lucide-react";
 import { motion } from "framer-motion";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 export default function HomePage() {
   const [result, setResult] = useState<AnalysisResponse | null>(null);
+
+  const LegalModal = ({ title, content, icon: Icon }: { title: string, content: React.ReactNode, icon: any }) => (
+    <Dialog>
+      <DialogTrigger asChild>
+        <button className="hover:text-primary transition-colors cursor-pointer">{title}</button>
+      </DialogTrigger>
+      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2 text-2xl">
+            <Icon className="w-6 h-6 text-primary" />
+            {title}
+          </DialogTitle>
+        </DialogHeader>
+        <div className="prose prose-slate dark:prose-invert max-w-none py-4">
+          {content}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
 
   return (
     <div className="min-h-screen bg-slate-50/50 pb-20">
@@ -21,9 +47,9 @@ export default function HomePage() {
             </div>
             <div>
               <h1 className="font-display font-bold text-xl leading-none text-slate-800">
-                Sağlık<span className="text-primary">Asistanı</span>
+                Sağlık<span className="text-primary">Pusulam</span>
               </h1>
-              <p className="text-xs text-slate-500 font-medium">Yapay Zeka Destekli Rehber</p>
+              <p className="text-xs text-slate-500 font-medium">Bilgilendirme Amaçlı Sağlık Rehberi</p>
             </div>
           </div>
           
@@ -40,6 +66,12 @@ export default function HomePage() {
       </header>
 
       <main className="container max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="mb-6 bg-blue-50 border border-blue-100 p-3 rounded-lg text-center">
+          <p className="text-xs md:text-sm text-blue-800 font-medium">
+            “Bu uygulama tıbbi teşhis koymaz. Bilgilendirme amaçlıdır. Acil durumlarda 112 Acil Servis’i arayın.”
+          </p>
+        </div>
+
         <MedicalDisclaimer />
 
         {/* Hero Section */}
@@ -53,7 +85,7 @@ export default function HomePage() {
               Sağlığınız için <span className="text-gradient">Akıllı Rehberlik</span>
             </h2>
             <p className="text-lg text-slate-600 mb-8 leading-relaxed">
-              Yapay zeka teknolojisi ile semptomlarınızı analiz edin, doğru tıbbi bölüme yönlendirme alın ve size en yakın sağlık kuruluşlarını bulun.
+              Akıllı yönlendirme sistemi ile semptomlarınızı analiz edin, doğru tıbbi bölüme yönlendirme alın ve size en yakın sağlık kuruluşlarını bulun.
             </p>
           </motion.div>
         </div>
@@ -94,16 +126,58 @@ export default function HomePage() {
 
       <footer className="bg-white border-t border-slate-100 mt-20">
         <div className="container max-w-7xl mx-auto px-4 py-12">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-            <div className="flex items-center gap-2 text-slate-400">
-              <HeartPulse className="w-5 h-5" />
-              <span className="font-semibold text-slate-600">Sağlık Rehberi</span>
+          <div className="flex flex-col md:flex-row justify-between items-center gap-8 mb-8 border-b border-slate-50 pb-8">
+            <div className="flex items-center gap-2">
+              <HeartPulse className="w-6 h-6 text-primary" />
+              <span className="font-bold text-lg text-slate-800">Sağlık Pusulam</span>
             </div>
-            <div className="text-sm text-slate-400 text-center md:text-right">
-              <p>© 2026 Sağlık Rehberi. Tüm hakları saklıdır.</p>
-              <p>Bu uygulama tıbbi teşhis koymaz.</p>
-              <p className="mt-1 font-medium text-slate-500">Geliştirici: Altay Sulanc</p>
+            <div className="flex flex-wrap justify-center gap-x-8 gap-y-4 text-sm font-medium text-slate-500">
+              <LegalModal 
+                title="Hakkımızda" 
+                icon={Info}
+                content={
+                  <div className="space-y-4">
+                    <p>Sağlık Pusulam, üniversite öğrencisi bir geliştirici tarafından, insanların günlük hayatta yaşadıkları sağlıkla ilgili belirsizliklerde daha doğru yönlendirme alabilmelerine yardımcı olmak amacıyla geliştirilmiştir.</p>
+                    <p>Bu platform, kullanıcıların yaşadıkları belirtilere göre hangi hastane bölümüne başvurmalarının daha uygun olabileceği konusunda genel bilgilendirme ve yönlendirme sunar.</p>
+                    <p>Sağlık Pusulam tıbbi teşhis veya tedavi önerisi sunmaz. Uygulama tamamen bilgilendirme amaçlıdır ve kullanıcıdan kişisel sağlık verisi talep etmez veya saklamaz.</p>
+                  </div>
+                } 
+              />
+              <LegalModal 
+                title="Gizlilik Politikası" 
+                icon={ShieldCheck}
+                content={
+                  <ul className="list-disc pl-5 space-y-2">
+                    <li>Kullanıcılardan kişisel sağlık verisi toplanmaz</li>
+                    <li>Kimlik veya hassas bilgi istenmez</li>
+                    <li>Girilen bilgiler kayıt altına alınmaz</li>
+                    <li>Veriler yalnızca anlık olarak analiz edilir</li>
+                    <li>Üçüncü taraflarla veri paylaşımı yapılmaz</li>
+                  </ul>
+                } 
+              />
+              <LegalModal 
+                title="Kullanım Koşulları" 
+                icon={FileText}
+                content={
+                  <div className="space-y-4">
+                    <p>Bu web sitesini kullanan herkes aşağıdaki koşulları kabul etmiş sayılır.</p>
+                    <p>Sağlık Pusulam yalnızca bilgilendirme ve yönlendirme amaçlıdır. Sunulan bilgiler tıbbi teşhis veya tedavi yerine geçmez.</p>
+                    <p>Kullanıcılar site üzerindeki bilgileri kendi sorumlulukları dahilinde kullanır. Sağlık Pusulam, sunulan bilgiler doğrultusunda alınan kararlardan sorumlu tutulamaz.</p>
+                    <p className="font-bold text-red-600">Acil durumlarda 112 Acil Servis ile iletişime geçilmelidir.</p>
+                  </div>
+                } 
+              />
             </div>
+          </div>
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-slate-400">
+            <div className="text-center md:text-left">
+              <p>© 2026 Sağlık Pusulam. Tüm hakları saklıdır.</p>
+              <p className="text-xs mt-1">İletişim: saglikpusulam@hotmail.com</p>
+            </div>
+            <p className="text-xs max-w-xs text-center md:text-right">
+              Bu uygulama tıbbi teşhis koymaz. Bilgilendirme amaçlıdır. Acil durumlarda 112 Acil Servis’i arayın.
+            </p>
           </div>
         </div>
       </footer>

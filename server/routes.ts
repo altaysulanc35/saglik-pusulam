@@ -16,7 +16,7 @@ export async function registerRoutes(
       const input = api.symptoms.analyze.input.parse(req.body);
 
       const prompt = `
-        Sen yardımcı bir sağlık asistanısın. Kullanıcı şu şikayeti bildirdi: "${input.symptom}".
+        Sen yardımcı bir akıllı rehberlik sistemisin. Kullanıcı şu şikayeti bildirdi: "${input.symptom}".
         
         Lütfen bu belirtileri analiz et ve aşağıdaki JSON formatında yanıt ver:
         {
@@ -29,13 +29,14 @@ export async function registerRoutes(
         ÖNEMLİ:
         - Yanıtın kesinlikle Türkçe olsun.
         - Asla tıbbi teşhis koyma (ör. "Sen grip olmuşsun" deme, "Belirtileriniz gribe benziyor olabilir" de).
+        - Sen bir tıbbi uzman değilsin, sadece belirtilere göre yönlendirme yapan akıllı bir rehbersin.
         - Eğer durum çok ciddiyse (kalp krizi, inme belirtileri vb.) urgency: "emergency" olarak işaretle ve explanation kısmında DERHAL 112'yi araması gerektiğini vurgula.
       `;
 
       const response = await openai.chat.completions.create({
         model: "gpt-5.1",
         messages: [
-          { role: "system", content: "Sen Türkçe konuşan, yardımsever bir sağlık asistanısın. Tıbbi teşhis koymazsın, sadece yönlendirme yaparsın." },
+          { role: "system", content: "Sen Türkçe konuşan, yardımsever bir akıllı yönlendirme rehberisin. Tıbbi teşhis koymazsın, sadece uygun bölüme yönlendirme yaparsın." },
           { role: "user", content: prompt }
         ],
         response_format: { type: "json_object" },
