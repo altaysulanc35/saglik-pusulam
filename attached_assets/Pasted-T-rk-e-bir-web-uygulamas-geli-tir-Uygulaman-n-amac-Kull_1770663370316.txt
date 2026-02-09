@@ -1,0 +1,62 @@
+Türkçe bir web uygulaması geliştir.
+
+Uygulamanın amacı:
+Kullanıcının yaşadığı rahatsızlığa göre hangi hastane bölümüne gitmesi gerektiğini
+bilgi amaçlı olarak göstermek ve kullanıcının konumuna yakın hastaneleri
+harita, adres ve telefon numarasıyla listelemek.
+
+⚠️ Uygulama KESİNLİKLE tıbbi teşhis koymaz.
+Sadece bilgilendirme ve yönlendirme amaçlıdır.
+Bunu arayüzde açıkça belirt.
+
+GENEL ÖZELLİKLER:
+- Modern, sade ve mobil uyumlu arayüz
+- Türkçe dil desteği
+- Basit ve hızlı kullanım
+- Mobil uyumlu (responsive) tasarım
+
+KULLANICI AKIŞI:
+1. Kullanıcı bir rahatsızlık belirtisi girer veya listeden seçer
+   (örnek: baş ağrısı, mide bulantısı, göğüs ağrısı, cilt döküntüsü vb.)
+2. Kullanıcı çok spesifik veya tıbbi olmayan bir ifade de yazabilir
+   (örnek: "işaret parmağım kıvrılmıyor", "kolumu kaldıramıyorum",
+   "elim uyuşuyor", "midem garip hissediyor" gibi)
+3. Sistem, girilen metni analiz ederek ana semptomu anlamaya çalışır
+   ve buna en uygun hastane bölümünü önerir
+4. Eğer ifade net değilse, kullanıcıya en yakın ve genel bölümler önerilir
+   (örnek: Dahiliye, Ortopedi, Nöroloji)
+5. Önerilen bölüm ekranda açık ve anlaşılır şekilde gösterilir
+6. Kullanıcının konumuna göre (izin verilirse) yakın hastaneler listelenir
+
+HER HASTANE İÇİN ŞU BİLGİLER GÖSTERİLİR:
+- Hastane adı
+- Adres
+- Telefon numarası
+- Harita üzerinde konum
+- “Yol tarifi al” butonu
+
+TEKNİK GEREKSİNİMLER:
+- Frontend: HTML, CSS, JavaScript
+- Backend: Node.js (Express)
+- Rahatsızlık → bölüm eşleştirmesi basit bir JSON veri yapısıyla yapılabilir
+- Serbest metin girdileri için:
+  - Anahtar kelime analizi
+  - Kısmi eşleşme (fuzzy search) veya
+  - Basit doğal dil işleme mantığı kullanılabilir
+- Yakındaki hastaneler için:
+  - Google Maps API veya OpenStreetMap kullanılabilir
+- Responsive tasarım zorunlu
+
+GÜVENLİK VE UYARI:
+- Sayfanın görünür bir yerinde şu uyarı mutlaka yer almalı:
+  “Bu uygulama tıbbi teşhis koymaz. Acil durumlarda 112’yi arayın.”
+- Kullanıcı verileri kaydedilmez
+- Girilen metinler yalnızca anlık olarak analiz edilir
+
+EKSTRA (opsiyonel ama güzel olur):
+- Acil durum ifadeleri algılanırsa ekranda kırmızı uyarı göster
+  (örnek: “nefes alamıyorum”, “göğsüm çok ağrıyor”, “bilincimi kaybediyorum”)
+- Koyu / açık tema seçeneği
+- Kullanıcıya “Bu öneri bilgilendirme amaçlıdır” hatırlatması
+
+Kod yapısı temiz, okunabilir ve geliştirilebilir olsun.
