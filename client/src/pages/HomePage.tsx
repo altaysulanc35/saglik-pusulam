@@ -97,12 +97,13 @@ export default function HomePage() {
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             <div className="flex items-center gap-2 text-slate-400">
               <HeartPulse className="w-5 h-5" />
-              <span className="font-semibold text-slate-600">SağlıkAsistanı</span>
+              <span className="font-semibold text-slate-600">Sağlık Rehberi</span>
             </div>
-            <p className="text-sm text-slate-400 text-center md:text-right">
-              &copy; 2024 Sağlık Asistanı. Tüm hakları saklıdır. <br />
-              <span className="text-xs">Bu uygulama sadece bilgilendirme amaçlıdır.</span>
-            </p>
+            <div className="text-sm text-slate-400 text-center md:text-right">
+              <p>© 2026 Sağlık Rehberi. Tüm hakları saklıdır.</p>
+              <p>Bu uygulama tıbbi teşhis koymaz.</p>
+              <p className="mt-1 font-medium text-slate-500">Geliştirici: Altay Sulanc</p>
+            </div>
           </div>
         </div>
       </footer>
