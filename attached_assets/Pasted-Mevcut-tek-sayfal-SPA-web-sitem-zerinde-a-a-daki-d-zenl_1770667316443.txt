@@ -1,0 +1,126 @@
+Mevcut tek sayfalı (SPA) web sitem üzerinde aşağıdaki düzenlemeleri yap.
+
+⚠️ ÇOK ÖNEMLİ:
+- Mevcut tasarım, renkler, layout ve ana işlevler KORUNACAK
+- Sitenin çalışma mantığı değiştirilmeyecek
+- Yapılan eklemeler ikincil (secondary) içerik olarak kalmalı
+- Amaç: yasal uyum + marka güncellemesi
+
+--------------------------------------------------
+1️⃣ MARKA ADI GÜNCELLEME
+--------------------------------------------------
+
+Header (üst kısım) bölümünde yer alan:
+
+“Sağlık Asistanı”
+ve varsa alt açıklaması
+
+AŞAĞIDAKİ ŞEKİLDE DEĞİŞTİRİLMELİDİR:
+
+ANA BAŞLIK:
+“Sağlık Pusulam”
+
+ALT AÇIKLAMA (varsa):
+“Bilgilendirme Amaçlı Sağlık Rehberi”
+
+- Font, ikon ve logo alanı korunmalı
+- Sadece metinler güncellenmeli
+- Site genelinde marka adı tutarlı olmalı
+
+EKSTRA (ÖNEMLİ):
+Sitede geçen “Yapay Zeka Destekli” gibi ifadeler,
+tıbbi teşhis çağrışımı yapmayacak şekilde yumuşatılmalı.
+
+ÖNERİLEN KULLANIMLAR:
+- “Akıllı Rehber”
+- “Akıllı Yönlendirme Sistemi”
+
+“Tıbbi teşhis”, “tanı koyar” gibi ifadelerden kaçınılmalı.
+
+--------------------------------------------------
+2️⃣ YASAL VE BİLGİLENDİRİCİ BÖLÜMLER EKLENMESİ
+--------------------------------------------------
+
+Bu bölümler siteye GÖZE BATMAYACAK şekilde eklenmelidir.
+
+YERLEŞİM:
+- Sayfanın en altına (footer) küçük linkler ekle:
+  • Hakkımızda
+  • Gizlilik Politikası
+  • Kullanım Koşulları
+
+- Bu linklere tıklandığında:
+  • Yeni sayfa açılmadan
+  • Modal (popup) veya
+  • Yumuşak scroll ile açılan
+  • Okunabilir ama sade bir alan göster
+
+--------------------------------------------------
+3️⃣ EKLENECEK METİNLER
+--------------------------------------------------
+
+### HAKKIMIZDA
+Sağlık Pusulam, üniversite öğrencisi bir geliştirici tarafından,
+insanların günlük hayatta yaşadıkları sağlıkla ilgili belirsizliklerde
+daha doğru yönlendirme alabilmelerine yardımcı olmak amacıyla geliştirilmiştir.
+
+Bu platform, kullanıcıların yaşadıkları belirtilere göre hangi hastane
+bölümüne başvurmalarının daha uygun olabileceği konusunda genel
+bilgilendirme ve yönlendirme sunar.
+
+Sağlık Pusulam tıbbi teşhis veya tedavi önerisi sunmaz.
+Uygulama tamamen bilgilendirme amaçlıdır ve kullanıcıdan
+kişisel sağlık verisi talep etmez veya saklamaz.
+
+---
+
+### GİZLİLİK POLİTİKASI
+- Kullanıcılardan kişisel sağlık verisi toplanmaz
+- Kimlik veya hassas bilgi istenmez
+- Girilen bilgiler kayıt altına alınmaz
+- Veriler yalnızca anlık olarak analiz edilir
+- Üçüncü taraflarla veri paylaşımı yapılmaz
+
+---
+
+### KULLANIM KOŞULLARI
+Bu web sitesini kullanan herkes aşağıdaki koşulları kabul etmiş sayılır.
+
+Sağlık Pusulam yalnızca bilgilendirme ve yönlendirme amaçlıdır.
+Sunulan bilgiler tıbbi teşhis veya tedavi yerine geçmez.
+
+Kullanıcılar site üzerindeki bilgileri kendi sorumlulukları dahilinde kullanır.
+Sağlık Pusulam, sunulan bilgiler doğrultusunda alınan kararlardan
+sorumlu tutulamaz.
+
+Acil durumlarda 112 Acil Servis ile iletişime geçilmelidir.
+
+--------------------------------------------------
+4️⃣ ZORUNLU GÖRÜNÜR UYARI
+--------------------------------------------------
+
+Sayfanın alt kısmında veya header altında,
+küçük ama okunabilir şekilde şu uyarı yer almalıdır:
+
+“Bu uygulama tıbbi teşhis koymaz.
+Bilgilendirme amaçlıdır.
+Acil durumlarda 112 Acil Servis’i arayın.”
+
+--------------------------------------------------
+5️⃣ FOOTER METNİ
+--------------------------------------------------
+
+Footer’da şu metin sade bir şekilde yer almalıdır:
+
+© 2026 Sağlık Pusulam. Tüm hakları saklıdır.
+İletişim: saglikpusulam@hotmail.com
+
+--------------------------------------------------
+6️⃣ TEKNİK NOTLAR
+--------------------------------------------------
+
+- Yeni sayfa oluşturulmayacak
+- SPA yapısı korunacak
+- Mevcut CSS bozulmayacak
+- Eklenen alanlar kolayca düzenlenebilir olmalı
+- Mobil uyumluluk korunmalı
