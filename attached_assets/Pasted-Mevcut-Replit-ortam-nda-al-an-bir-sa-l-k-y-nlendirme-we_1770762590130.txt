@@ -1,0 +1,122 @@
+Mevcut, Replit ortamında çalışan bir sağlık yönlendirme web sitem var. Site halihazırda aktif, kendi temasına, renk paletine, fontlarına ve UI düzenine sahip. Bunların hiçbiri bozulmayacak.
+
+AŞAĞIDAKİ İKİ ŞEYİ BİRLİKTE YAPMANI İSTİYORUM:
+
+1) Mevcut harita bileşenine küçük bir ekleme
+2) Siteye yeni bir “Paketler” sayfası eklenmesi
+
+---
+
+1) HARİTA İÇİN TEK DEĞİŞİKLİK
+
+Haritada ZATEN listelenen tüm hastaneler görünmeye devam edecek.
+
+SADECE şu görsel ayrım yapılacak:
+- ÖZEL hastaneler → KIRMIZI marker
+- DEVLET hastaneleri → MAVİ marker
+
+Bu işlem:
+- Var olan harita altyapısına (Leaflet / Mapbox / OSM) uyacak
+- Yeni harita kurulmayacak
+- Sadece marker render logic güncellenecek
+- Tema renklerine en yakın tonlar kullanılacak
+- Global CSS etkilenmeyecek
+- Paket sisteminden BAĞIMSIZ çalışacak
+
+Hukuki olarak:
+- Marker tooltip’lerinde teşhis, tedavi, ilaç, kesin ifadeler OLMAYACAK
+- Sadece hastane adı, türü ve adres bilgisi gösterilecek
+
+---
+
+2) YENİ “PAKETLER” SAYFASI (AYRI SAYFA)
+
+Siteye /packages veya /premium benzeri bir route ile
+YENİ bir paket sayfası ekle.
+
+Bu sayfa:
+- Mevcut sitenin temasını birebir kullansın
+- Aynı fontlar, buton stilleri ve renk paleti devam etsin
+- Modern, sade, güven veren bir tasarım olsun
+- Kullanıcıyı korkutmayan, net bir dil kullansın
+
+---
+
+3) PAKET YAPISI VE MEKANİKLER
+
+### ÜCRETSİZ
+- Bölüm yönlendirme
+- Kısa, genel açıklama
+- Yakın hastaneleri haritada görme
+- Günlük sınırlı kullanım
+
+Açıklama dili:
+“Genel bilgilendirme amaçlıdır.”
+
+---
+
+### PREMIUM BASIC
+- Daha detaylı açıklamalar
+- Olası nedenlerin öncelik sıralaması (kesinlik içermeyen)
+- “Ne zaman doktora / acile başvurmalıyım?” bilgilendirmesi
+- Günlük kullanım limitinin kaldırılması
+- Reklamsız deneyim
+
+Dil:
+“Uygun olabilir”, “değerlendirilebilir”, “doktor görüşü önerilir”
+
+---
+
+### PREMIUM PLUS
+- Premium Basic’teki her şey
+- Geçmiş semptom kayıtları
+- Semptomların zaman içindeki değişimini görme
+- Doktorla paylaşılabilecek PDF sağlık özeti
+- “Doktora giderken sorulabilecek başlıklar” rehberi
+
+Kesinlikle:
+- Teşhis yok
+- İlaç yok
+- Tedavi önerisi yok
+
+---
+
+### FAMILY / CARE PAKETİ
+- Birden fazla kişi profili (3–5)
+- Çocuk / yetişkin / yaşlı için ayrı geçmiş takibi
+- Daha hassas uyarı dili
+- Acil durumlarda devlet hastanelerinin öne çıkarıldığı bilgilendirme
+
+---
+
+4) PAKET MEKANİĞİ (GENEL)
+
+- Paket bilgisi backend’den alınacak
+- Kullanıcının aktif paketi frontend’e aktarılacak
+- AI cevap uzunluğu, detay seviyesi ve içerik tonu pakete göre değişecek
+- Harita GÖRÜNÜRLÜĞÜ değişmeyecek (herkes her hastaneyi görür)
+- Paket farkı sadece:
+  - açıklama derinliği
+  - ek bilgilendirme
+  - kayıt / geçmiş
+üzerinden olacak
+
+---
+
+5) HUKUKİ GÜVENLİK (HER SAYFADA GEÇERLİ)
+
+Tüm sayfalarda veya footer’da şu uyarı yer alacak:
+
+“Bu platform tıbbi teşhis veya tedavi sunmaz.  
+Sunulan bilgiler yalnızca sağlık kuruluşu ve branş yönlendirme amaçlıdır.”
+
+---
+
+ÇIKTI OLARAK ŞUNLARI ÜRET:
+
+- Harita marker renklendirmesini yapan kod (ekleme şeklinde)
+- Yeni paketler sayfasının frontend kodu
+- Paket yapılarını gösteren UI
+- Paket mekaniklerini yöneten örnek backend mantığı
+- Tüm kodlar Replit’te çalışabilir, sade ve yorum satırlı olsun
+- Mevcut siteye eklenebilir şekilde yazılsın
