@@ -17,8 +17,8 @@ const DefaultIcon = L.icon({
 
 L.Marker.prototype.options.icon = DefaultIcon;
 
-// Custom Icon for User Location
-const userIcon = new L.Icon({
+// Custom Icon for Public Hospitals
+const publicHospitalIcon = new L.Icon({
   iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png",
   shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
   iconSize: [25, 41],
@@ -27,9 +27,19 @@ const userIcon = new L.Icon({
   shadowSize: [41, 41]
 });
 
-// Custom Icon for Hospitals
-const hospitalIcon = new L.Icon({
+// Custom Icon for Private Hospitals
+const privateHospitalIcon = new L.Icon({
   iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png",
+  shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
+
+// Custom Icon for User Location
+const userIcon = new L.Icon({
+  iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png",
   shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
   iconSize: [25, 41],
   iconAnchor: [12, 41],
@@ -98,15 +108,16 @@ export function HospitalMap() {
             </Popup>
           </Marker>
 
-          {hospitals?.map((hospital) => (
+          {hospitals?.map((hospital: any) => (
             <Marker
               key={hospital.id}
               position={[hospital.lat, hospital.lng]}
-              icon={hospitalIcon}
+              icon={hospital.type === 'private' ? privateHospitalIcon : publicHospitalIcon}
             >
               <Popup>
                 <div className="p-2 min-w-[200px]">
                   <h3 className="font-bold text-primary text-base mb-1">{hospital.name}</h3>
+                  <p className="text-sm text-slate-600 mb-1">{hospital.type === 'private' ? 'Özel Hastane' : 'Devlet Hastanesi'}</p>
                   <p className="text-sm text-slate-600 mb-2">{hospital.address}</p>
                   <div className="flex items-center justify-between text-xs font-semibold">
                     <span className="bg-blue-50 text-blue-700 px-2 py-1 rounded">
@@ -122,12 +133,16 @@ export function HospitalMap() {
         {/* Overlay Legend */}
         <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm p-3 rounded-xl shadow-lg border border-slate-100 z-[1000] text-sm">
           <div className="flex items-center gap-2 mb-2">
-            <span className="w-3 h-3 rounded-full bg-blue-500"></span>
+            <span className="w-3 h-3 rounded-full bg-green-500"></span>
             <span className="font-medium text-slate-700">Sizin Konumunuz</span>
+          </div>
+          <div className="flex items-center gap-2 mb-2">
+            <span className="w-3 h-3 rounded-full bg-blue-500"></span>
+            <span className="font-medium text-slate-700">Devlet Hastaneleri</span>
           </div>
           <div className="flex items-center gap-2">
             <span className="w-3 h-3 rounded-full bg-red-500"></span>
-            <span className="font-medium text-slate-700">Yakın Hastaneler</span>
+            <span className="font-medium text-slate-700">Özel Hastaneler</span>
           </div>
         </div>
 

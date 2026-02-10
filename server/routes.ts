@@ -63,6 +63,7 @@ export async function registerRoutes(
         {
           id: "1",
           name: "Merkez Devlet Hastanesi",
+          type: "public",
           address: "Atatürk Cad. No:123, Merkez",
           phone: "0212 555 11 22",
           lat: lat + 0.002,
@@ -72,6 +73,7 @@ export async function registerRoutes(
         {
           id: "2",
           name: "Özel Yaşam Polikliniği",
+          type: "private",
           address: "Cumhuriyet Mah. 4. Sokak",
           phone: "0212 555 33 44",
           lat: lat - 0.003,
@@ -81,6 +83,7 @@ export async function registerRoutes(
         {
           id: "3",
           name: "Şehir Eğitim ve Araştırma Hastanesi",
+          type: "public",
           address: "Hastane Yolu Üzeri, Kampüs",
           phone: "0212 555 55 66",
           lat: lat + 0.001,
@@ -90,6 +93,7 @@ export async function registerRoutes(
         {
           id: "4",
           name: "Acil Tıp Merkezi",
+          type: "private",
           address: "İnönü Bulvarı No:5",
           phone: "0212 555 99 00",
           lat: lat - 0.001,

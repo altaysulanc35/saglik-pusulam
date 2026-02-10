@@ -56,6 +56,7 @@ export default function HomePage() {
           <div className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600">
             <a href="#analyze" className="hover:text-primary transition-colors">Semptom Analizi</a>
             <a href="#hospitals" className="hover:text-primary transition-colors">Hastaneler</a>
+            <a href="/packages" className="hover:text-primary transition-colors">Paketler</a>
             <div className="w-px h-4 bg-slate-200"></div>
             <a href="tel:112" className="flex items-center gap-2 text-red-600 bg-red-50 px-4 py-2 rounded-full hover:bg-red-100 transition-colors">
               <Activity className="w-4 h-4" />
@@ -168,6 +169,7 @@ export default function HomePage() {
                   </div>
                 } 
               />
+              <a href="/packages" className="hover:text-primary transition-colors">Paketler</a>
             </div>
           </div>
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-slate-400">
