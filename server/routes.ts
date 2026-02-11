@@ -181,8 +181,11 @@ export async function registerRoutes(
       console.log(`Hospital search: lat=${lat}, lng=${lng}, radius=${radius}`);
       const apiKey = process.env.GOOGLE_MAPS_API_KEY;
 
+      const isDebug = req.query.debug === 'true';
+
       if (!apiKey) {
         console.warn("GOOGLE_MAPS_API_KEY is missing. Returning mock data.");
+        if (isDebug) return res.status(500).json({ error: "GOOGLE_MAPS_API_KEY is missing" });
         return res.json(getMockHospitals(lat, lng));
       }
 
@@ -214,6 +217,15 @@ export async function registerRoutes(
           const errorText = await response.text();
           console.error("Google Places API Error:", response.status, errorText);
           console.warn("Falling back to mock data due to API error.");
+
+          if (isDebug) {
+            return res.status(response.status).json({
+              message: "Google Places API Error",
+              status: response.status,
+              details: errorText
+            });
+          }
+
           return res.json(getMockHospitals(lat, lng));
         }
 
@@ -222,6 +234,9 @@ export async function registerRoutes(
 
         if (places.length === 0) {
           console.log("No places found via API. Returning mock data for better UX.");
+          // Even in debug, empty list is not an error, but let's show it
+          if (isDebug) return res.json({ message: "No places found", places: [] });
+
           return res.json(getMockHospitals(lat, lng));
         }
 
