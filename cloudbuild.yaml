@@ -1,0 +1,24 @@
+steps:
+  # Build the container image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/saglik-pusulam:$COMMIT_SHA', '.']
+
+  # Push the container image to Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/saglik-pusulam:$COMMIT_SHA']
+
+  # Deploy container image to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'saglik-pusulam'
+      - '--image'
+      - 'gcr.io/$PROJECT_ID/saglik-pusulam:$COMMIT_SHA'
+      - '--region'
+      - 'europe-west1' # Default region, can be changed
+      - '--platform'
+      - 'managed'
+images:
+  - 'gcr.io/$PROJECT_ID/saglik-pusulam:$COMMIT_SHA'
