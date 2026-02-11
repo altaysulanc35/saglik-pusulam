@@ -55,36 +55,57 @@ export async function registerRoutes(
         responseMimeType: "application/json",
       };
 
-      const result = await geminiModel.generateContent({
-        contents: [
-          {
-            role: "user",
-            parts: [{ text: "Sen Türkçe konuşan, yardımsever bir akıllı yönlendirme rehberisin. Tıbbi teşhis koymazsın, sadece uygun bölüme yönlendirme yaparsın.\n\n" + prompt }]
-          }
-        ],
-        generationConfig,
-        safetySettings: [
-          {
-            category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-            threshold: HarmBlockThreshold.BLOCK_NONE,
-          },
-          {
-            category: HarmCategory.HARM_CATEGORY_HARASSMENT,
-            threshold: HarmBlockThreshold.BLOCK_NONE,
-          },
-          {
-            category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
-            threshold: HarmBlockThreshold.BLOCK_NONE,
-          },
-          {
-            category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
-            threshold: HarmBlockThreshold.BLOCK_NONE,
-          },
-        ],
-      });
+      let result;
+      let activeModelName = "gemini-1.5-flash";
+
+      try {
+        result = await geminiModel.generateContent({
+          contents: [
+            {
+              role: "user",
+              parts: [{ text: "Sen Türkçe konuşan, yardımsever bir akıllı yönlendirme rehberisin. Tıbbi teşhis koymazsın, sadece uygun bölüme yönlendirme yaparsın.\n\n" + prompt }]
+            }
+          ],
+          generationConfig,
+          safetySettings: [
+            { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE },
+            { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_NONE },
+            { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_NONE },
+            { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_NONE },
+          ],
+        });
+      } catch (firstError: any) {
+        console.error(`Error with ${activeModelName}:`, firstError);
+
+        // Fallback to gemini-pro if flash fails (e.g. 404 or other issues)
+        if (firstError.message?.includes("404") || firstError.message?.includes("not found")) {
+          console.log("Falling back to gemini-pro...");
+          activeModelName = "gemini-pro";
+          const { getGeminiModel } = await import("./gemini");
+          const fallbackModel = getGeminiModel("gemini-pro");
+
+          result = await fallbackModel.generateContent({
+            contents: [
+              {
+                role: "user",
+                parts: [{ text: "Sen Türkçe konuşan, yardımsever bir akıllı yönlendirme rehberisin. Tıbbi teşhis koymazsın, sadece uygun bölüme yönlendirme yaparsın.\n\n" + prompt }]
+              }
+            ],
+            generationConfig,
+            safetySettings: [
+              { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE },
+              { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_NONE },
+              { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_NONE },
+              { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_NONE },
+            ],
+          });
+        } else {
+          throw firstError;
+        }
+      }
 
       const responseText = result.response.text();
-      console.log("Gemini Raw Response:", responseText); // Log for debugging
+      console.log(`Gemini Raw Response (${activeModelName}):`, responseText);
 
       // Clean the response if it contains markdown code blocks
       const cleanJson = responseText.replace(/```json/g, "").replace(/```/g, "").trim();
@@ -103,13 +124,44 @@ export async function registerRoutes(
     } catch (error: any) {
       console.error("Analysis error:", error);
       // Return detailed error for debugging
+      const isDummyKey = process.env.GEMINI_API_KEY === "AIzaSyBccDUlUcF1ejaKP4EyExxpVvAvVW1NOwo";
+      const hint = !process.env.GEMINI_API_KEY ? "GEMINI_API_KEY is missing." : (isDummyKey ? "Using DUMMY_KEY (invalid)." : "Key is set but might be invalid.");
+
       res.status(500).json({
-        message: "Analiz sırasında bir hata oluştu [v2].",
-        error: error.message || String(error),
+        message: "Analiz sırasında bir hata oluştu.",
+        error: (error.message || String(error)) + ` [Hint: ${hint}]`,
+        details: error,
+      });
+    }
+  });
+
+  // AI Health Check Endpoint
+  app.get("/api/health/ai", async (req, res) => {
+    try {
+      const apiKey = process.env.GEMINI_API_KEY;
+      const maskedKey = apiKey ? `${apiKey.substring(0, 4)}...` : "MISSING";
+
+      // We can't easily list models with the simple client, so we'll just try a simple generation with a known model
+      const { geminiModel } = await import("./gemini");
+      const result = await geminiModel.generateContent("Test connection");
+      const response = result.response.text();
+
+      res.json({
+        status: "ok",
+        key: maskedKey,
+        model: "gemini-1.5-flash",
+        response: response.substring(0, 50)
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        status: "error",
+        error: error.message,
         details: error
       });
     }
   });
+
+  // Hospitals List Endpoint
 
   // Hospitals List Endpoint
   app.get(api.hospitals.list.path, async (req, res) => {
