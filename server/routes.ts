@@ -124,8 +124,7 @@ export async function registerRoutes(
     } catch (error: any) {
       console.error("Analysis error:", error);
       // Return detailed error for debugging
-      const isDummyKey = process.env.GEMINI_API_KEY === "AIzaSyBccDUlUcF1ejaKP4EyExxpVvAvVW1NOwo";
-      const hint = !process.env.GEMINI_API_KEY ? "GEMINI_API_KEY is missing." : (isDummyKey ? "Using DUMMY_KEY (invalid)." : "Key is set but might be invalid.");
+      const hint = !process.env.GEMINI_API_KEY ? "GEMINI_API_KEY is missing." : "Check your API Key permissions (404 = Key invalid or model unavailable).";
 
       res.status(500).json({
         message: "Analiz sırasında bir hata oluştu.",
