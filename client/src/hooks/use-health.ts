@@ -19,7 +19,9 @@ export function useAnalyzeSymptom() {
 
       if (!res.ok) {
         const error = await res.json();
-        throw new Error(error.message || "Analiz sırasında bir hata oluştu");
+        // If detailed error is available, use it. Otherwise use the message.
+        const errorMessage = error.error || error.message || "Analiz sırasında bir hata oluştu";
+        throw new Error(errorMessage);
       }
 
       return api.symptoms.analyze.responses[200].parse(await res.json());
