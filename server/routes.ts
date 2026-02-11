@@ -122,58 +122,72 @@ export async function registerRoutes(
   // Hospitals List Endpoint
   // Hospitals List Endpoint
   // Hospitals List Endpoint
+  // Hospitals List Endpoint
   app.get(api.hospitals.list.path, async (req, res) => {
+    // 1. Define Mock Data Generator (Fallback) at the top so it's always available
+    const getMockHospitals = (centerLat: number, centerLng: number) => {
+      console.log(`Generating mock hospital data around ${centerLat}, ${centerLng}...`);
+      return [
+        {
+          id: "1",
+          name: "Merkez Devlet Hastanesi (Demo)",
+          type: "public",
+          address: "Atatürk Cad. No:123, Merkez",
+          phone: "0212 555 11 22",
+          lat: centerLat + 0.002,
+          lng: centerLng + 0.002,
+          distance: 350
+        },
+        {
+          id: "2",
+          name: "Acil Tıp Merkezi (Demo)",
+          type: "public",
+          address: "İnönü Bulvarı No:5",
+          phone: "0212 555 99 00",
+          lat: centerLat - 0.001,
+          lng: centerLng - 0.002,
+          distance: 250
+        },
+        {
+          id: "3",
+          name: "Şehir Hastanesi (Demo)",
+          type: "public",
+          address: "Kampüs Yolu",
+          phone: "0212 555 00 00",
+          lat: centerLat + 0.001,
+          lng: centerLng - 0.003,
+          distance: 750
+        }
+      ];
+    };
+
+    let lat, lng, radius;
+
     try {
-      const { lat, lng, radius } = api.hospitals.list.input.parse(req.query);
+      // 2. Safe Input Parsing
+      try {
+        const parsed = api.hospitals.list.input.parse(req.query);
+        lat = parsed.lat;
+        lng = parsed.lng;
+        radius = parsed.radius;
+      } catch (validationError) {
+        console.warn("Input validation failed, using defaults (Istanbul):", validationError);
+        // Default to Istanbul center if validation fails
+        lat = 41.0082;
+        lng = 28.9784;
+        radius = 5000;
+      }
+
+      console.log(`Hospital search: lat=${lat}, lng=${lng}, radius=${radius}`);
       const apiKey = process.env.GOOGLE_MAPS_API_KEY;
-
-      console.log(`Hospital search request: lat=${lat}, lng=${lng}, radius=${radius}`);
-
-      // Mock Data Generator (Fallback)
-      const getMockHospitals = () => {
-        console.log("Generating mock hospital data (fallback)...");
-        return [
-          {
-            id: "1",
-            name: "Merkez Devlet Hastanesi (Demo)",
-            type: "public",
-            address: "Atatürk Cad. No:123, Merkez",
-            phone: "0212 555 11 22",
-            lat: lat + 0.002,
-            lng: lng + 0.002,
-            distance: 350
-          },
-          {
-            id: "2",
-            name: "Acil Tıp Merkezi (Demo)",
-            type: "public",
-            address: "İnönü Bulvarı No:5",
-            phone: "0212 555 99 00",
-            lat: lat - 0.001,
-            lng: lng - 0.002,
-            distance: 250
-          },
-          {
-            id: "3",
-            name: "Şehir Hastanesi (Demo)",
-            type: "public",
-            address: "Kampüs Yolu",
-            phone: "0212 555 00 00",
-            lat: lat + 0.001,
-            lng: lng - 0.003,
-            distance: 750
-          }
-        ];
-      };
 
       if (!apiKey) {
         console.warn("GOOGLE_MAPS_API_KEY is missing. Returning mock data.");
-        return res.json(getMockHospitals());
+        return res.json(getMockHospitals(lat, lng));
       }
 
+      console.log("Attempting to fetch from Google Places API (New)...");
       try {
-        console.log("Attempting to fetch from Google Places API (New)...");
-        // Use Google Places API (New) - Search Nearby
         const response = await fetch("https://places.googleapis.com/v1/places:searchNearby", {
           method: "POST",
           headers: {
@@ -182,7 +196,6 @@ export async function registerRoutes(
             "X-Goog-FieldMask": "places.name,places.displayName,places.formattedAddress,places.location,places.types,places.nationalPhoneNumber"
           },
           body: JSON.stringify({
-            // 'health' is not a valid type in v1, using standard medical types
             includedTypes: ["hospital", "medical_center", "doctor"],
             maxResultCount: 20,
             locationRestriction: {
@@ -201,7 +214,7 @@ export async function registerRoutes(
           const errorText = await response.text();
           console.error("Google Places API Error:", response.status, errorText);
           console.warn("Falling back to mock data due to API error.");
-          return res.json(getMockHospitals());
+          return res.json(getMockHospitals(lat, lng));
         }
 
         const data = await response.json();
@@ -209,7 +222,7 @@ export async function registerRoutes(
 
         if (places.length === 0) {
           console.log("No places found via API. Returning mock data for better UX.");
-          return res.json(getMockHospitals());
+          return res.json(getMockHospitals(lat, lng));
         }
 
         console.log(`Found ${places.length} places from Google API.`);
@@ -248,12 +261,15 @@ export async function registerRoutes(
       } catch (apiError) {
         console.error("API Call Exception:", apiError);
         console.warn("Falling back to mock data due to exception.");
-        return res.json(getMockHospitals());
+        return res.json(getMockHospitals(lat, lng));
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Hospitals endpoint fatal error:", error);
-      // Attempt to return mock data even in fatal error if possible, or just standard error
-      res.status(500).json({ message: "Hastane araması başarısız." });
+      // Return details for debugging
+      res.status(500).json({
+        message: "Hastane araması başarısız.",
+        error: error.message || String(error)
+      });
     }
   });
 
