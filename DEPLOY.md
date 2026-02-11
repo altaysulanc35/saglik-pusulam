@@ -48,10 +48,11 @@ Eğer Cloud Build kullanmak istemezseniz, manuel olarak da yapabilirsiniz.
 ## Notlar
 
 *   **Veritabanı**: Uygulama şu an veritabanı bağlantısı olmadan çalışacak şekilde ayarlandı (`server/db.ts` içinde opsiyonel yapıldı). Eğer veritabanı bağlamak isterseniz, Google Cloud SQL kullanabilir ve `DATABASE_URL` ortam değişkenini ayarlayabilirsiniz.
-*   **Yapay Zeka (Gemini) [KRİTİK]**: Uygulamanın çalışması için Cloud Run'da `GEMINI_API_KEY` ortam değişkeni **MUTLAKA** tanımlanmalıdır.
+*   **Yapay Zeka (OpenAI) [KRİTİK]**: Uygulamanın çalışması için Cloud Run'da `OPENAI_API_KEY` ortam değişkeni **MUTLAKA** tanımlanmalıdır.
     1. Cloud Run konsolunda servisinize gidin.
     2. "Edit & Deploy New Revision" butonuna tıklayın.
     3. "Variables & Secrets" sekmesine gelin.
-    4. "Add Variable" diyerek Name: `GEMINI_API_KEY`, Value: `(Senin API Anahtarın)` girin.
-    5. Deploy edin.
+    4. "Add Variable" diyerek Name: `OPENAI_API_KEY`, Value: `(Senin OpenAI API Anahtarın)` girin.
+    5. Mevcut `GEMINI_API_KEY` varsa silebilirsiniz.
+    6. Deploy edin.
 *   **Hatalar**: Derleme (build) işlemi `npm run check` ve `npm run build` ile doğrulanmıştır.

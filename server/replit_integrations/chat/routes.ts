@@ -1,6 +1,6 @@
 import type { Express, Request, Response } from "express";
 import { chatStorage } from "./storage";
-import { geminiModel } from "../../gemini";
+import { openai } from "../../openai";
 
 export function registerChatRoutes(app: Express): void {
   // Get all conversations
@@ -75,20 +75,17 @@ export function registerChatRoutes(app: Express): void {
       res.setHeader("Cache-Control", "no-cache");
       res.setHeader("Connection", "keep-alive");
 
-      // Stream response from Gemini
-      const result = await geminiModel.generateContentStream({
-        contents: [
-          ...chatMessages.map(m => ({
-            role: m.role === "assistant" ? "model" : "user",
-            parts: [{ text: m.content }]
-          }))
-        ],
+      // Stream response from OpenAI
+      const stream = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: chatMessages,
+        stream: true,
       });
 
       let fullResponse = "";
 
-      for await (const chunk of result.stream) {
-        const content = chunk.text();
+      for await (const chunk of stream) {
+        const content = chunk.choices[0]?.delta?.content || "";
         if (content) {
           fullResponse += content;
           res.write(`data: ${JSON.stringify({ content })}\n\n`);

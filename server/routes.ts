@@ -3,8 +3,7 @@ import type { Server } from "http";
 import { storage } from "./storage";
 import { api } from "@shared/routes";
 import { z } from "zod";
-import { geminiModel } from "./gemini";
-import { HarmCategory, HarmBlockThreshold } from "@google/generative-ai";
+import { openai } from "./openai";
 
 export async function registerRoutes(
   httpServer: Server,
@@ -50,72 +49,30 @@ export async function registerRoutes(
       // but we can instruct it in the prompt and clean the output. 
       // Note: gemini-1.5-flash supports response_mime_type: "application/json"
 
-      const generationConfig = {
-        temperature: 0.1,
-        responseMimeType: "application/json",
-      };
+      // OpenAI Implementation
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [
+          {
+            role: "system",
+            content: "Sen Türkçe konuşan, yardımsever bir akıllı yönlendirme rehberisin. Tıbbi teşhis koymazsın, sadece uygun bölüme yönlendirme yaparsın. Yanıtını sadece JSON formatında ver."
+          },
+          {
+            role: "user",
+            content: prompt
+          }
+        ],
+        response_format: { type: "json_object" },
+      });
 
-      let result;
-      let activeModelName = "gemini-1.5-flash";
-
-      try {
-        result = await geminiModel.generateContent({
-          contents: [
-            {
-              role: "user",
-              parts: [{ text: "Sen Türkçe konuşan, yardımsever bir akıllı yönlendirme rehberisin. Tıbbi teşhis koymazsın, sadece uygun bölüme yönlendirme yaparsın.\n\n" + prompt }]
-            }
-          ],
-          generationConfig,
-          safetySettings: [
-            { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE },
-            { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_NONE },
-            { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_NONE },
-            { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_NONE },
-          ],
-        });
-      } catch (firstError: any) {
-        console.error(`Error with ${activeModelName}:`, firstError);
-
-        // Fallback to gemini-pro if flash fails (e.g. 404 or other issues)
-        if (firstError.message?.includes("404") || firstError.message?.includes("not found")) {
-          console.log("Falling back to gemini-pro...");
-          activeModelName = "gemini-pro";
-          const { getGeminiModel } = await import("./gemini");
-          const fallbackModel = getGeminiModel("gemini-pro");
-
-          result = await fallbackModel.generateContent({
-            contents: [
-              {
-                role: "user",
-                parts: [{ text: "Sen Türkçe konuşan, yardımsever bir akıllı yönlendirme rehberisin. Tıbbi teşhis koymazsın, sadece uygun bölüme yönlendirme yaparsın.\n\n" + prompt }]
-              }
-            ],
-            generationConfig,
-            safetySettings: [
-              { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE },
-              { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_NONE },
-              { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_NONE },
-              { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_NONE },
-            ],
-          });
-        } else {
-          throw firstError;
-        }
-      }
-
-      const responseText = result.response.text();
-      console.log(`Gemini Raw Response (${activeModelName}):`, responseText);
-
-      // Clean the response if it contains markdown code blocks
-      const cleanJson = responseText.replace(/```json/g, "").replace(/```/g, "").trim();
+      const responseText = response.choices[0].message.content || "{}";
+      console.log("OpenAI Raw Response:", responseText);
 
       let analysisResult;
       try {
-        analysisResult = JSON.parse(cleanJson || "{}");
+        analysisResult = JSON.parse(responseText);
       } catch (parseError) {
         console.error("JSON Parse Error:", parseError);
-        console.error("Failed JSON content:", cleanJson);
         throw new Error("Invalid JSON response from AI");
       }
 
@@ -124,7 +81,7 @@ export async function registerRoutes(
     } catch (error: any) {
       console.error("Analysis error:", error);
       // Return detailed error for debugging
-      const hint = !process.env.GEMINI_API_KEY ? "GEMINI_API_KEY is missing." : "Check your API Key permissions (404 = Key invalid or model unavailable).";
+      const hint = !process.env.OPENAI_API_KEY ? "OPENAI_API_KEY is missing." : "Check your API Key permissions and quota.";
 
       res.status(500).json({
         message: "Analiz sırasında bir hata oluştu.",
