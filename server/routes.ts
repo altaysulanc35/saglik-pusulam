@@ -53,7 +53,19 @@ export async function registerRoutes(
       });
 
       const responseText = result.response.text();
-      const analysisResult = JSON.parse(responseText || "{}");
+      console.log("Gemini Raw Response:", responseText); // Log for debugging
+
+      // Clean the response if it contains markdown code blocks
+      const cleanJson = responseText.replace(/```json/g, "").replace(/```/g, "").trim();
+
+      let analysisResult;
+      try {
+        analysisResult = JSON.parse(cleanJson || "{}");
+      } catch (parseError) {
+        console.error("JSON Parse Error:", parseError);
+        console.error("Failed JSON content:", cleanJson);
+        throw new Error("Invalid JSON response from AI");
+      }
 
       // Validate response against our schema loosely or just return
       res.json(analysisResult);

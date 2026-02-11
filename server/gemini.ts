@@ -1,3 +1,4 @@
+// Google Gemini Client
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const apiKey = process.env.GEMINI_API_KEY || process.env.AI_INTEGRATIONS_OPENAI_API_KEY || "AIzaSyBccDUlUcF1ejaKP4EyExxpVvAvVW1NOwo";
