@@ -48,4 +48,5 @@ Eğer Cloud Build kullanmak istemezseniz, manuel olarak da yapabilirsiniz.
 ## Notlar
 
 *   **Veritabanı**: Uygulama şu an veritabanı bağlantısı olmadan çalışacak şekilde ayarlandı (`server/db.ts` içinde opsiyonel yapıldı). Eğer veritabanı bağlamak isterseniz, Google Cloud SQL kullanabilir ve `DATABASE_URL` ortam değişkenini ayarlayabilirsiniz.
+*   **Yapay Zeka (Gemini)**: Uygulama artık Google Gemini kullanıyor. Çalışması için Cloud Run üzerinde `GEMINI_API_KEY` ortam değişkenini tanımlamanız gerekir. (Eğer tanımlamazsanız, eski `AI_INTEGRATIONS_OPENAI_API_KEY` değişkenini de kullanabilir, ancak Gemini anahtarı önerilir).
 *   **Hatalar**: Derleme (build) işlemi `npm run check` ve `npm run build` ile doğrulanmıştır.

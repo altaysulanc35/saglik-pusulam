@@ -3,7 +3,7 @@ import type { Server } from "http";
 import { storage } from "./storage";
 import { api } from "@shared/routes";
 import { z } from "zod";
-import { openai } from "./replit_integrations/audio/client"; // Re-using the client from audio integration which is already set up
+import { geminiModel } from "./gemini";
 
 export async function registerRoutes(
   httpServer: Server,
@@ -33,19 +33,30 @@ export async function registerRoutes(
         - Eğer durum çok ciddiyse (kalp krizi, inme belirtileri vb.) urgency: "emergency" olarak işaretle ve explanation kısmında DERHAL 112'yi araması gerektiğini vurgula.
       `;
 
-      const response = await openai.chat.completions.create({
-        model: "gpt-5.1",
-        messages: [
-          { role: "system", content: "Sen Türkçe konuşan, yardımsever bir akıllı yönlendirme rehberisin. Tıbbi teşhis koymazsın, sadece uygun bölüme yönlendirme yaparsın." },
-          { role: "user", content: prompt }
+      // Gemini doesn't strictly enforce JSON via a parameter in the same way OpenAI does for all models yet,
+      // but we can instruct it in the prompt and clean the output. 
+      // Note: gemini-1.5-flash supports response_mime_type: "application/json"
+
+      const generationConfig = {
+        temperature: 0.1,
+        responseMimeType: "application/json",
+      };
+
+      const result = await geminiModel.generateContent({
+        contents: [
+          {
+            role: "user",
+            parts: [{ text: "Sen Türkçe konuşan, yardımsever bir akıllı yönlendirme rehberisin. Tıbbi teşhis koymazsın, sadece uygun bölüme yönlendirme yaparsın.\n\n" + prompt }]
+          }
         ],
-        response_format: { type: "json_object" },
+        generationConfig
       });
 
-      const result = JSON.parse(response.choices[0].message.content || "{}");
-      
+      const responseText = result.response.text();
+      const analysisResult = JSON.parse(responseText || "{}");
+
       // Validate response against our schema loosely or just return
-      res.json(result);
+      res.json(analysisResult);
     } catch (error) {
       console.error("Analysis error:", error);
       res.status(500).json({ message: "Analiz sırasında bir hata oluştu." });
