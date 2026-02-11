@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import { useHospitals } from "@/hooks/use-health";
+// Third-party components
 import { MapPin, Navigation, Loader2 } from "lucide-react";
 import L from "leaflet";
 
@@ -15,6 +16,7 @@ const DefaultIcon = L.icon({
   iconAnchor: [12, 41],
 });
 
+// @ts-ignore
 L.Marker.prototype.options.icon = DefaultIcon;
 
 // Custom Icon for Public Hospitals
@@ -66,7 +68,7 @@ export function HospitalMap() {
             setPermissionDenied(true);
           }
           // Default to Istanbul center if location fails
-          setLocation({ lat: 41.0082, lng: 28.9784 }); 
+          setLocation({ lat: 41.0082, lng: 28.9784 });
         }
       );
     } else {
@@ -101,7 +103,7 @@ export function HospitalMap() {
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
-          
+
           <Marker position={[location.lat, location.lng]} icon={userIcon}>
             <Popup>
               <div className="font-bold">Sizin Konumunuz</div>

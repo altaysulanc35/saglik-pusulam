@@ -1,61 +1,51 @@
 # Google Cloud Run Dağıtım Rehberi
 
-Bu proje, Google Cloud Run üzerinde çalışacak şekilde yapılandırılmıştır. Aşağıdaki adımları takip ederek uygulamanızı yayınlayabilirsiniz.
+Projeniz artık Google Cloud Run üzerinde çalışmaya hazır! Aşağıdaki adımları takiperek yayınlayabilirsiniz.
 
 ## Ön Hazırlık
 
-1.  **Google Cloud SDK**'yı yükleyin ve giriş yapın:
+1.  **Google Cloud CLI (gcloud)** yüklü olduğundan emin olun.
+2.  Google Cloud projenizi seçin:
     ```bash
-    gcloud auth login
     gcloud config set project [PROJE_ID]
     ```
 
-2.  **API'leri Etkinleştirin**:
-    Cloud Run ve Container Registry API'lerinin etkin olduğundan emin olun.
+## 1. Yöntem: Cloud Build ile Otomatik Dağıtım (Önerilen)
+
+Bu yöntem, `cloudbuild.yaml` dosyasını kullanarak Docker imajını oluşturur ve Cloud Run'a dağıtır.
+
+1.  Cloud Build ve Cloud Run API'lerini etkinleştirin:
     ```bash
-    gcloud services enable run.googleapis.com containerregistry.googleapis.com cloudbuild.googleapis.com
+    gcloud services enable cloudbuild.googleapis.com run.googleapis.com
     ```
 
-## 1. Yöntem: Doğrudan Kaynak Koddan Dağıtım (Önerilen)
+2.  Dağıtımı başlatın:
+    ```bash
+    gcloud builds submit --config cloudbuild.yaml .
+    ```
 
-En kolay yöntem, kaynak kodunuzu doğrudan Cloud Run'a göndermektir. Google Cloud Build, Dockerfile'ı kullanarak imajı sizin için oluşturur.
+3.  İşlem bittiğinde, terminalde size uygulamanızın URL adresi verilecektir.
 
-```bash
-gcloud run deploy saglik-pusulam --source . --region europe-west1 --allow-unauthenticated
-```
+## 2. Yöntem: Manuel Docker Build ve Deploy
 
--   `saglik-pusulam`: Servis adı.
--   `--source .`: Bulunduğunuz klasörü kaynak olarak kullanır.
--   `--region europe-west1`: Sunucu bölgesi (Türkiye'ye yakın olduğu için Belçika seçildi, değiştirebilirsiniz).
--   `--allow-unauthenticated`: Uygulamanın herkese açık olmasını sağlar.
+Eğer Cloud Build kullanmak istemezseniz, manuel olarak da yapabilirsiniz.
 
-Komutu çalıştırdıktan sonra size veritabanı bağlantısı gibi ortam değişkenlerini (environment variables) sormazsa, deployment sonrası panelden eklemeniz gerekebilir.
+1.  Docker imajını oluşturun:
+    ```bash
+    docker build -t gcr.io/[PROJE_ID]/saglik-pusulam .
+    ```
 
-## 2. Yöntem: Ortam Değişkenlerini Ayarlama
+2.  İmajı Google Container Registry'ye yükleyin:
+    ```bash
+    docker push gcr.io/[PROJE_ID]/saglik-pusulam
+    ```
 
-Uygulamanızın veritabanına bağlanabilmesi için `DATABASE_URL` gibi değişkenlere ihtiyacı vardır.
+3.  Cloud Run'a dağıtın:
+    ```bash
+    gcloud run deploy saglik-pusulam --image gcr.io/[PROJE_ID]/saglik-pusulam --platform managed --region europe-west1 --allow-unauthenticated
+    ```
 
-### Terminal ile Ayarlama:
+## Notlar
 
-```bash
-gcloud run services update saglik-pusulam \
-  --set-env-vars DATABASE_URL="postgresql://kullanici:sifre@host:port/veritabani" \
-  --region europe-west1
-```
-
-### Google Cloud Console ile Ayarlama (Arayüzden):
-
-1.  Google Cloud Console'da **Cloud Run** sayfasına gidin.
-2.  `saglik-pusulam` servisine tıklayın.
-3.  Üstteki **Edit & Deploy New Revision** butonuna tıklayın.
-4.  **Variables & Secrets** sekmesine gelin.
-5.  `DATABASE_URL` ve diğer gerekli değişkenleri (varsa `SESSION_SECRET` vb.) ekleyin.
-6.  **Deploy** butonuna basın.
-
-## Sorun Giderme
-
-Eğer "Internal Server Error" alırsanız veya uygulama açılmazsa:
-
-1.  Cloud Run panelinde **Logs** sekmesine gidin.
-2.  Burada uygulamanın neden çöktüğünü (genellikle veritabanı bağlantı hatası) görebilirsiniz.
-3.  Port hatası alıyorsanız endişelenmeyin, Dockerfile `PORT` değişkenini otomatik algılayacak şekilde ayarlandı.
+*   **Veritabanı**: Uygulama şu an veritabanı bağlantısı olmadan çalışacak şekilde ayarlandı (`server/db.ts` içinde opsiyonel yapıldı). Eğer veritabanı bağlamak isterseniz, Google Cloud SQL kullanabilir ve `DATABASE_URL` ortam değişkenini ayarlayabilirsiniz.
+*   **Hatalar**: Derleme (build) işlemi `npm run check` ve `npm run build` ile doğrulanmıştır.

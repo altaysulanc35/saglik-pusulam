@@ -16,6 +16,23 @@ export const insertFeedbackSchema = createInsertSchema(feedback).pick({
   isPositive: true
 });
 
+export const conversations = pgTable("conversations", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const messages = pgTable("messages", {
+  id: serial("id").primaryKey(),
+  conversationId: serial("conversation_id").references(() => conversations.id),
+  role: text("role").notNull(), // user or assistant
+  content: text("content").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertConversationSchema = createInsertSchema(conversations);
+export const insertMessageSchema = createInsertSchema(messages);
+
 // === API CONTRACT TYPES ===
 
 // Symptom Analysis

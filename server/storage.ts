@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { feedback, type InsertFeedbackSchema } from "@shared/schema";
+import { feedback, type insertFeedbackSchema } from "@shared/schema";
 
 export interface IStorage {
   // We can add feedback storage later if needed
