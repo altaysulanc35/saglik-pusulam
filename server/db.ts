@@ -5,10 +5,14 @@ import * as schema from "@shared/schema";
 const { Pool } = pg;
 
 if (!process.env.DATABASE_URL) {
-  throw new Error(
-    "DATABASE_URL must be set. Did you forget to provision a database?",
+  console.warn(
+    "WARNING: DATABASE_URL is not set. The application will start but database operations will fail.",
   );
 }
 
-export const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+// Fallback to a dummy connection string to allow the app to start
+// The pool will likely fail to connect on actual queries, but we avoid startup crash.
+export const pool = new Pool({ 
+  connectionString: process.env.DATABASE_URL || "postgres://user:pass@localhost:5432/db" 
+});
 export const db = drizzle(pool, { schema });
