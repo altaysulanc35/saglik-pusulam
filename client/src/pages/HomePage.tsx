@@ -52,11 +52,10 @@ export default function HomePage() {
               <p className="text-xs text-slate-500 font-medium">Bilgilendirme Amaçlı Sağlık Rehberi</p>
             </div>
           </div>
-          
+
           <div className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600">
             <a href="#analyze" className="hover:text-primary transition-colors">Semptom Analizi</a>
             <a href="#hospitals" className="hover:text-primary transition-colors">Hastaneler</a>
-            <a href="/packages" className="hover:text-primary transition-colors">Paketler</a>
             <div className="w-px h-4 bg-slate-200"></div>
             <a href="tel:112" className="flex items-center gap-2 text-red-600 bg-red-50 px-4 py-2 rounded-full hover:bg-red-100 transition-colors">
               <Activity className="w-4 h-4" />
@@ -102,7 +101,7 @@ export default function HomePage() {
               <p className="text-slate-500">Şikayetlerinizi anlatın, bölüm önerisi alın</p>
             </div>
           </div>
-          
+
           <div className="grid lg:grid-cols-1 gap-8">
             <SymptomForm onResult={setResult} />
             {result && <AnalysisResult result={result} />}
@@ -111,15 +110,7 @@ export default function HomePage() {
 
         {/* Hospital Map Section */}
         <section id="hospitals" className="scroll-mt-24">
-          <div className="flex items-center gap-4 mb-8">
-            <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center text-red-600">
-              <MapPin className="w-6 h-6" />
-            </div>
-            <div>
-              <h3 className="text-2xl font-bold text-slate-800">Yakın Hastaneler</h3>
-              <p className="text-slate-500">Konumunuza en yakın sağlık kuruluşları</p>
-            </div>
-          </div>
+
 
           <HospitalMap />
         </section>
@@ -133,8 +124,8 @@ export default function HomePage() {
               <span className="font-bold text-lg text-slate-800">Sağlık Pusulam</span>
             </div>
             <div className="flex flex-wrap justify-center gap-x-8 gap-y-4 text-sm font-medium text-slate-500">
-              <LegalModal 
-                title="Hakkımızda" 
+              <LegalModal
+                title="Hakkımızda"
                 icon={Info}
                 content={
                   <div className="space-y-4">
@@ -142,10 +133,10 @@ export default function HomePage() {
                     <p>Bu platform, kullanıcıların yaşadıkları belirtilere göre hangi hastane bölümüne başvurmalarının daha uygun olabileceği konusunda genel bilgilendirme ve yönlendirme sunar.</p>
                     <p>Sağlık Pusulam tıbbi teşhis veya tedavi önerisi sunmaz. Uygulama tamamen bilgilendirme amaçlıdır ve kullanıcıdan kişisel sağlık verisi talep etmez veya saklamaz.</p>
                   </div>
-                } 
+                }
               />
-              <LegalModal 
-                title="Gizlilik Politikası" 
+              <LegalModal
+                title="Gizlilik Politikası"
                 icon={ShieldCheck}
                 content={
                   <ul className="list-disc pl-5 space-y-2">
@@ -155,10 +146,10 @@ export default function HomePage() {
                     <li>Veriler yalnızca anlık olarak analiz edilir</li>
                     <li>Üçüncü taraflarla veri paylaşımı yapılmaz</li>
                   </ul>
-                } 
+                }
               />
-              <LegalModal 
-                title="Kullanım Koşulları" 
+              <LegalModal
+                title="Kullanım Koşulları"
                 icon={FileText}
                 content={
                   <div className="space-y-4">
@@ -167,9 +158,9 @@ export default function HomePage() {
                     <p>Kullanıcılar site üzerindeki bilgileri kendi sorumlulukları dahilinde kullanır. Sağlık Pusulam, sunulan bilgiler doğrultusunda alınan kararlardan sorumlu tutulamaz.</p>
                     <p className="font-bold text-red-600">Acil durumlarda 112 Acil Servis ile iletişime geçilmelidir.</p>
                   </div>
-                } 
+                }
               />
-              <a href="/packages" className="hover:text-primary transition-colors">Paketler</a>
+
             </div>
           </div>
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-slate-400">

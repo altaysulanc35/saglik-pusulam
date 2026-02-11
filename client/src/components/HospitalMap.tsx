@@ -19,19 +19,9 @@ const DefaultIcon = L.icon({
 // @ts-ignore
 L.Marker.prototype.options.icon = DefaultIcon;
 
-// Custom Icon for Public Hospitals
-const publicHospitalIcon = new L.Icon({
+// Custom Icon for Hospitals (Blue)
+const hospitalIcon = new L.Icon({
   iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png",
-  shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41]
-});
-
-// Custom Icon for Private Hospitals
-const privateHospitalIcon = new L.Icon({
-  iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png",
   shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
   iconSize: [25, 41],
   iconAnchor: [12, 41],
@@ -114,12 +104,12 @@ export function HospitalMap() {
             <Marker
               key={hospital.id}
               position={[hospital.lat, hospital.lng]}
-              icon={hospital.type === 'private' ? privateHospitalIcon : publicHospitalIcon}
+              icon={hospitalIcon}
             >
               <Popup>
                 <div className="p-2 min-w-[200px]">
                   <h3 className="font-bold text-primary text-base mb-1">{hospital.name}</h3>
-                  <p className="text-sm text-slate-600 mb-1">{hospital.type === 'private' ? 'Özel Hastane' : 'Devlet Hastanesi'}</p>
+                  <p className="text-sm text-slate-600 mb-1">Sağlık Kurumu</p>
                   <p className="text-sm text-slate-600 mb-2">{hospital.address}</p>
                   <div className="flex items-center justify-between text-xs font-semibold">
                     <span className="bg-blue-50 text-blue-700 px-2 py-1 rounded">
@@ -138,13 +128,9 @@ export function HospitalMap() {
             <span className="w-3 h-3 rounded-full bg-green-500"></span>
             <span className="font-medium text-slate-700">Sizin Konumunuz</span>
           </div>
-          <div className="flex items-center gap-2 mb-2">
-            <span className="w-3 h-3 rounded-full bg-blue-500"></span>
-            <span className="font-medium text-slate-700">Devlet Hastaneleri</span>
-          </div>
           <div className="flex items-center gap-2">
-            <span className="w-3 h-3 rounded-full bg-red-500"></span>
-            <span className="font-medium text-slate-700">Özel Hastaneler</span>
+            <span className="w-3 h-3 rounded-full bg-blue-500"></span>
+            <span className="font-medium text-slate-700">Hastaneler</span>
           </div>
         </div>
 
