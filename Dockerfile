@@ -19,7 +19,7 @@ FROM node:20-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
-ENV PORT=5000
+ENV PORT=8080
 
 # Copy package files again to install ONLY production dependencies
 # This is needed because the build script treats some dependencies as external
@@ -33,8 +33,8 @@ COPY --from=builder /app/dist ./dist
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 USER appuser
 
-# Expose the port (Google Cloud Run will inject PORT env var, but 5000 is our default)
-EXPOSE 5000
+# Expose the port (Google Cloud Run will inject PORT env var, but 8080 is the default in the screenshot)
+EXPOSE 8080
 
 # Start the application
 CMD ["node", "dist/index.cjs"]
