@@ -94,19 +94,20 @@ export async function registerRoutes(
   // AI Health Check Endpoint
   app.get("/api/health/ai", async (req, res) => {
     try {
-      const apiKey = process.env.GEMINI_API_KEY;
+      const apiKey = process.env.OPENAI_API_KEY;
       const maskedKey = apiKey ? `${apiKey.substring(0, 4)}...` : "MISSING";
 
-      // We can't easily list models with the simple client, so we'll just try a simple generation with a known model
-      const { geminiModel } = await import("./gemini");
-      const result = await geminiModel.generateContent("Test connection");
-      const response = result.response.text();
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [{ role: "user", content: "Test connection" }],
+        max_tokens: 10,
+      });
 
       res.json({
         status: "ok",
         key: maskedKey,
-        model: "gemini-1.5-flash",
-        response: response.substring(0, 50)
+        model: "gpt-4o",
+        response: response.choices[0].message.content
       });
     } catch (error: any) {
       res.status(500).json({
