@@ -14,7 +14,19 @@ export async function registerRoutes(
   // Symptom Analysis Endpoint
   app.post(api.symptoms.analyze.path, async (req, res) => {
     try {
-      const input = api.symptoms.analyze.input.parse(req.body);
+      console.log("Analyze request received:", JSON.stringify(req.body)); // Log incoming request
+
+      let input;
+      try {
+        input = api.symptoms.analyze.input.parse(req.body);
+      } catch (validationError) {
+        console.error("Input validation failed:", validationError);
+        return res.status(400).json({
+          message: "Geçersiz veri formatı.",
+          error: "Girdi verisi doğrulanamadı. Lütfen tekrar deneyin.",
+          details: validationError
+        });
+      }
 
       const prompt = `
         Sen yardımcı bir akıllı rehberlik sistemisin. Kullanıcı şu şikayeti bildirdi: "${input.symptom}".
