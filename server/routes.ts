@@ -104,7 +104,7 @@ export async function registerRoutes(
       console.error("Analysis error:", error);
       // Return detailed error for debugging
       res.status(500).json({
-        message: "Analiz sırasında bir hata oluştu.",
+        message: "Analiz sırasında bir hata oluştu [v2].",
         error: error.message || String(error),
         details: error
       });
