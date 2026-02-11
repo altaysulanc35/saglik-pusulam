@@ -4,6 +4,7 @@ import { storage } from "./storage";
 import { api } from "@shared/routes";
 import { z } from "zod";
 import { geminiModel } from "./gemini";
+import { HarmCategory, HarmBlockThreshold } from "@google/generative-ai";
 
 export async function registerRoutes(
   httpServer: Server,
@@ -49,7 +50,25 @@ export async function registerRoutes(
             parts: [{ text: "Sen Türkçe konuşan, yardımsever bir akıllı yönlendirme rehberisin. Tıbbi teşhis koymazsın, sadece uygun bölüme yönlendirme yaparsın.\n\n" + prompt }]
           }
         ],
-        generationConfig
+        generationConfig,
+        safetySettings: [
+          {
+            category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+            threshold: HarmBlockThreshold.BLOCK_NONE,
+          },
+          {
+            category: HarmCategory.HARM_CATEGORY_HARASSMENT,
+            threshold: HarmBlockThreshold.BLOCK_NONE,
+          },
+          {
+            category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+            threshold: HarmBlockThreshold.BLOCK_NONE,
+          },
+          {
+            category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+            threshold: HarmBlockThreshold.BLOCK_NONE,
+          },
+        ],
       });
 
       const responseText = result.response.text();
@@ -69,9 +88,14 @@ export async function registerRoutes(
 
       // Validate response against our schema loosely or just return
       res.json(analysisResult);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Analysis error:", error);
-      res.status(500).json({ message: "Analiz sırasında bir hata oluştu." });
+      // Return detailed error for debugging
+      res.status(500).json({
+        message: "Analiz sırasında bir hata oluştu.",
+        error: error.message || String(error),
+        details: error
+      });
     }
   });
 
