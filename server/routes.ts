@@ -199,7 +199,9 @@ export async function registerRoutes(
             "X-Goog-FieldMask": "places.name,places.displayName,places.formattedAddress,places.location,places.types,places.nationalPhoneNumber"
           },
           body: JSON.stringify({
-            includedTypes: ["hospital", "medical_center", "doctor"],
+            // 'medical_center' is not valid in v1 Places API (New). 
+            // Using standard types from Table A.
+            includedTypes: ["hospital", "doctor", "pharmacy", "drugstore"],
             maxResultCount: 20,
             locationRestriction: {
               circle: {
@@ -230,6 +232,17 @@ export async function registerRoutes(
         }
 
         const data = await response.json();
+        console.log("Google Places API Response Status:", response.status);
+        if (data.places) {
+          console.log(`Google Places API returned ${data.places.length} places.`);
+          // Log the first place to see the structure
+          if (data.places.length > 0) {
+            console.log("First place sample:", JSON.stringify(data.places[0], null, 2));
+          }
+        } else {
+          console.log("Google Places API returned no 'places' array:", JSON.stringify(data, null, 2));
+        }
+
         const places = data.places || [];
 
         if (places.length === 0) {
