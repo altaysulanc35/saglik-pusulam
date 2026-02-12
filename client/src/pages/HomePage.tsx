@@ -48,6 +48,7 @@ export default function HomePage() {
             <div>
               <h1 className="font-display font-bold text-xl leading-none text-slate-800">
                 Sağlık<span className="text-primary">Pusulam</span>
+                <span className="ml-2 text-[10px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded-md align-top font-semibold tracking-wide border border-blue-200">BETA</span>
               </h1>
               <p className="text-xs text-slate-500 font-medium">Bilgilendirme Amaçlı Sağlık Rehberi</p>
             </div>

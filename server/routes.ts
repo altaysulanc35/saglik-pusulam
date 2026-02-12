@@ -161,7 +161,7 @@ export async function registerRoutes(
       ];
     };
 
-    let lat, lng, radius;
+    let lat: number, lng: number, radius: number | undefined;
 
     try {
       // 2. Safe Input Parsing
@@ -238,12 +238,68 @@ export async function registerRoutes(
           // Log the first place to see the structure
           if (data.places.length > 0) {
             console.log("First place sample:", JSON.stringify(data.places[0], null, 2));
+            // Summary of types found
+            const allTypes = data.places.map((p: any) => p.types).flat();
+            console.log("Types found in response:", Array.from(new Set(allTypes)));
           }
         } else {
           console.log("Google Places API returned no 'places' array:", JSON.stringify(data, null, 2));
         }
 
-        const places = data.places || [];
+        const rawPlaces = data.places || [];
+
+        // Post-processing filter to be stricter
+        const excludedTypes = [
+          "veterinary_care",
+          "pharmacy",
+          "drugstore",
+          "dentist",
+          "physiotherapist",
+          "nursing_home",
+          "school",
+          "gym",
+          "spa",
+          "hair_care"
+        ];
+
+        const places = rawPlaces.filter((place: any) => {
+          const types = place.types || [];
+          // If it has any excluded type, remove it
+          const hasExcludedType = types.some((t: string) => excludedTypes.includes(t));
+          if (hasExcludedType) return false;
+
+          // Name-based filtering (Blacklist)
+          const name = (place.displayName?.text || "").toLowerCase();
+          const nameExcludedTerms = [
+            "veteriner",
+            "eczane",
+            "diş",
+            "estetik",
+            "güzellik",
+            "huzurevi",
+            "rehabilitasyon",
+            "diyaliz",
+            "fizik tedavi",
+            "sağlık kabini",
+            "aile sağlığı",
+            "asm",
+            "poliklinik" // If user wants strictly hospitals, polyclinics might be excluded too, but let's keep it safe. 
+            // User said "hastane olduğundan emin ol", often users mean "Hospital" not "Clinic".
+            // Let's exclude purely "Poliklinik" if it doesn't say "Hastane".
+          ];
+
+          if (nameExcludedTerms.some(term => name.includes(term))) {
+            // Exception: If it explicitly says "Hastane" or "Hospital", keep it even if it has other words
+            if (!name.includes("hastane") && !name.includes("hospital") && !name.includes("tıp fakültesi")) {
+              return false;
+            }
+          }
+
+          // Ensure it actually has 'hospital' type (double check)
+          return types.includes("hospital") || types.includes("general_hospital");
+        });
+
+        console.log(`Filtered ${rawPlaces.length} places down to ${places.length} strict hospitals.`);
 
         if (places.length === 0) {
           console.log("No places found via API. Returning mock data for better UX.");
