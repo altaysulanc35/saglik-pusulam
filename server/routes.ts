@@ -201,7 +201,7 @@ export async function registerRoutes(
           body: JSON.stringify({
             // 'medical_center' is not valid in v1 Places API (New). 
             // Using standard types from Table A.
-            includedTypes: ["hospital", "doctor", "pharmacy", "drugstore"],
+            includedTypes: ["hospital"],
             maxResultCount: 20,
             locationRestriction: {
               circle: {
